@@ -20,9 +20,13 @@
     <string name="profile_terms_title">Terms of Service</string>
     <string name="profile_privacy_title">Privacy Policy</string>
     <string name="profile_sign_out">Sign out</string>
-    <string name="profile_edit_name_title">Your name</string>
     <string name="profile_edit_name_hint">Full name</string>
-    <string name="profile_edit_name_save">Save</string>
     <string name="profile_edit_name_error">Please enter your name</string>
-    <string name="profile_name_updated">Profile name updated</string>
+    <string name="profile_email_placeholder">Add your email</string>
+    <string name="profile_edit_email_hint">Email address</string>
+    <string name="profile_edit_email_error">Please enter a valid email</string>
+    <string name="profile_details_title">Complete your profile</string>
+    <string name="profile_edit_details_title">Edit profile details</string>
+    <string name="profile_details_save">Save</string>
+    <string name="profile_details_saved">Profile details saved</string>
 </resources>

@@ -11,6 +11,9 @@ import android.view.MenuItem;
 
 public class LoyaltyActivity extends AppCompatActivity {
 
+    public static final String EXTRA_OPEN_PROFILE =
+            "com.example.loyaltyprogram.EXTRA_OPEN_PROFILE";
+
     private BottomNavigationView bottomNavigationView;
     private FragmentManager fragmentManager;
 
@@ -25,6 +28,8 @@ public class LoyaltyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loyalty);
 
+        boolean openProfile = getIntent().getBooleanExtra(EXTRA_OPEN_PROFILE, false);
+
         // Initialize fragments
         homeFragment = new HomeFragment();
         rewardsFragment = new RewardsFragment();
@@ -35,11 +40,18 @@ public class LoyaltyActivity extends AppCompatActivity {
 
         // Load home fragment by default
         if (savedInstanceState == null) {
-            loadFragment(homeFragment);
+            if (openProfile) {
+                loadFragment(profileFragment);
+            } else {
+                loadFragment(homeFragment);
+            }
         }
 
         // Setup bottom navigation
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (openProfile) {
+            bottomNavigationView.setSelectedItemId(R.id.profileFragment);
+        }
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
