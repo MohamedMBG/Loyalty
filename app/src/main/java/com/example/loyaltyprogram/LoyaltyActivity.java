@@ -1,48 +1,71 @@
 package com.example.loyaltyprogram;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.view.MenuItem;
 
 public class LoyaltyActivity extends AppCompatActivity {
+
+    private BottomNavigationView bottomNavigationView;
+    private FragmentManager fragmentManager;
+
+    // Fragment instances
+    private HomeFragment homeFragment;
+    private RewardsFragment rewardsFragment;
+    private ScanFragment scanFragment;
+    private ProfileFragment profileFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_loyalty);
 
-        // Navigation setup: find NavController and wire it to the BottomNavigationView
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.homeFragment, R.id.scanFragment, R.id.profileFragment, R.id.rewardsFragment
-        ).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        // Initialize fragments
+        homeFragment = new HomeFragment();
+        rewardsFragment = new RewardsFragment();
+        scanFragment = new ScanFragment();
+        profileFragment = new ProfileFragment();
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
-        NavigationUI.setupWithNavController(bottomNav, navController);
+        fragmentManager = getSupportFragmentManager();
 
-        // Edge-to-edge: apply bottom system inset as padding to the BottomNavigationView
-        ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), insets.bottom);
-            return windowInsets;
+        // Load home fragment by default
+        if (savedInstanceState == null) {
+            loadFragment(homeFragment);
+        }
+
+        // Setup bottom navigation
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.homeFragment) {
+                    loadFragment(homeFragment);
+                    return true;
+                } else if (itemId == R.id.rewardsFragment) {
+                    loadFragment(rewardsFragment);
+                    return true;
+                } else if (itemId == R.id.scanFragment) {
+                    loadFragment(scanFragment);
+                    return true;
+                } else if (itemId == R.id.profileFragment) {
+                    loadFragment(profileFragment);
+                    return true;
+                }
+                return false;
+            }
         });
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return navController.navigateUp() || super.onSupportNavigateUp();
+    private void loadFragment(Fragment fragment) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.nav_host_fragment, fragment);
+        transaction.commit();
     }
 }
