@@ -25,6 +25,11 @@
     <string name="profile_email_placeholder">Add your email</string>
     <string name="profile_edit_email_hint">Email address</string>
     <string name="profile_edit_email_error">Please enter a valid email</string>
+    <string name="profile_birthday_placeholder">Birthday: Add your birthday</string>
+    <string name="profile_birthday_value">Birthday: %1$s</string>
+    <string name="profile_edit_birthday_hint">Birthday</string>
+    <string name="profile_edit_birthday_error">Please select your birthday</string>
+    <string name="profile_birthday_bonus_awarded">Happy birthday! You earned 50 points.</string>
     <string name="profile_details_title">Complete your profile</string>
     <string name="profile_edit_details_title">Edit profile details</string>
     <string name="profile_details_save">Save</string>

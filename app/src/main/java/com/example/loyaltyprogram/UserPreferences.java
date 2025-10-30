@@ -13,6 +13,7 @@ public final class UserPreferences {
     private static final String PREFS_NAME = "loyalty_prefs";
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_EMAIL = "user_email";
+    private static final String KEY_USER_BIRTHDAY = "user_birthday";
 
     private UserPreferences() {
         // Utility class
@@ -38,8 +39,17 @@ public final class UserPreferences {
         getPrefs(context).edit().putString(KEY_USER_EMAIL, email).apply();
     }
 
+    public static String getUserBirthday(Context context) {
+        return getPrefs(context).getString(KEY_USER_BIRTHDAY, "");
+    }
+
+    public static void setUserBirthday(Context context, String birthdayIsoDate) {
+        getPrefs(context).edit().putString(KEY_USER_BIRTHDAY, birthdayIsoDate).apply();
+    }
+
     public static boolean isProfileComplete(Context context) {
         return !TextUtils.isEmpty(getUserName(context))
-                && !TextUtils.isEmpty(getUserEmail(context));
+                && !TextUtils.isEmpty(getUserEmail(context))
+                && !TextUtils.isEmpty(getUserBirthday(context));
     }
 }
