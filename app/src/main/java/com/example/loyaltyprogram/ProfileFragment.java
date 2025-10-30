@@ -44,7 +44,7 @@ public class ProfileFragment extends Fragment {
         TextView nameView = view.findViewById(R.id.tvName);
         TextView phoneView = view.findViewById(R.id.tvPhone);
         TextView pointsView = view.findViewById(R.id.tvPoints);
-        View editNameButton = view.findViewById(R.id.btnEditName);
+        //View editNameButton = view.findViewById(R.id.btnEditName);
 
         String storedName = getStoredName();
         if (storedName.isEmpty()) {
@@ -62,7 +62,7 @@ public class ProfileFragment extends Fragment {
         int points = PointsRepository.getInstance(requireContext()).getPoints();
         pointsView.setText(getString(R.string.profile_points_value, points));
 
-        editNameButton.setOnClickListener(v -> showNameEditDialog(nameView));
+        //editNameButton.setOnClickListener(v -> showNameEditDialog(nameView));
     }
 
     private void showNameEditDialog(TextView targetView) {

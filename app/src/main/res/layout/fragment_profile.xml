@@ -35,6 +35,7 @@
                 android:id="@+id/cardProfile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#FAFAFA"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
@@ -52,8 +53,7 @@
                         android:layout_width="72dp"
                         android:layout_height="72dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/ic_profile"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MaterialComponents.Circle" />
+                        android:src="@drawable/ic_profile" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -91,14 +91,6 @@
                             android:textColor="@color/black"
                             android:textStyle="bold" />
                     </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnEditName"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/profile_edit_button"
-                        android:textAllCaps="false" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -106,6 +98,7 @@
                 android:id="@+id/cardShortcuts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#FAFAFA"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="1dp"
@@ -143,8 +136,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_notifications"
-                            android:tint="#FF9800"
-                            android:contentDescription="@string/profile_notifications_cd" />
+                            android:contentDescription="@string/profile_notifications_cd"
+                            app:tint="#FF9800" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -173,8 +166,8 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_chevron_right"
-                            android:tint="#B0B0B0"
-                            android:contentDescription="@string/profile_item_action_cd" />
+                            android:contentDescription="@string/profile_item_action_cd"
+                            app:tint="#B0B0B0" />
                     </LinearLayout>
 
                     <com.google.android.material.divider.MaterialDivider
@@ -195,8 +188,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_star"
-                            android:tint="#FFC107"
-                            android:contentDescription="@string/profile_saved_rewards_cd" />
+                            android:contentDescription="@string/profile_saved_rewards_cd"
+                            app:tint="#FFC107" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -212,8 +205,8 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_chevron_right"
-                            android:tint="#B0B0B0"
-                            android:contentDescription="@string/profile_item_action_cd" />
+                            android:contentDescription="@string/profile_item_action_cd"
+                            app:tint="#B0B0B0" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -231,6 +224,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="20dp"
+                android:backgroundTint="#FAFAFA"
                 app:cardElevation="1dp"
                 app:cardUseCompatPadding="true">
 
@@ -252,8 +246,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_document"
-                            android:tint="#90CAF9"
-                            android:contentDescription="@string/profile_help_cd" />
+                            android:contentDescription="@string/profile_help_cd"
+                            app:tint="#90CAF9" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -269,8 +263,8 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_chevron_right"
-                            android:tint="#B0B0B0"
-                            android:contentDescription="@string/profile_item_action_cd" />
+                            android:contentDescription="@string/profile_item_action_cd"
+                            app:tint="#B0B0B0" />
                     </LinearLayout>
 
                     <com.google.android.material.divider.MaterialDivider
@@ -301,8 +295,8 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_chevron_right"
-                            android:tint="#B0B0B0"
-                            android:contentDescription="@string/profile_item_action_cd" />
+                            android:contentDescription="@string/profile_item_action_cd"
+                            app:tint="#B0B0B0" />
                     </LinearLayout>
 
                     <com.google.android.material.divider.MaterialDivider
@@ -333,8 +327,8 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_chevron_right"
-                            android:tint="#B0B0B0"
-                            android:contentDescription="@string/profile_item_action_cd" />
+                            android:contentDescription="@string/profile_item_action_cd"
+                            app:tint="#B0B0B0" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -344,6 +338,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:backgroundTint="#FAFAFA"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="1dp"
                 app:cardUseCompatPadding="true">
@@ -369,8 +364,8 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_chevron_right"
-                        android:tint="#D32F2F"
-                        android:contentDescription="@string/profile_item_action_cd" />
+                        android:contentDescription="@string/profile_item_action_cd"
+                        app:tint="#D32F2F" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
