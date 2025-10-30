@@ -1,6 +1,28 @@
 <resources>
     <string name="app_name">Loyalty Program</string>
     <string name="b_b_coffee_shop"><![CDATA[B&B Coffee Shop]]></string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="profile_title">Profile</string>
+    <string name="profile_name_placeholder">Guest</string>
+    <string name="profile_phone_placeholder">Add your phone</string>
+    <string name="profile_points_placeholder">0 pts</string>
+    <string name="profile_points_value">%1$d pts</string>
+    <string name="profile_edit_button">Edit</string>
+    <string name="profile_shortcuts_title">Quick actions</string>
+    <string name="profile_notifications_title">Notifications</string>
+    <string name="profile_notifications_subtitle">Get updates about new rewards and offers</string>
+    <string name="profile_notifications_cd">Open notifications settings</string>
+    <string name="profile_item_action_cd">Open item</string>
+    <string name="profile_saved_rewards_title">Saved rewards</string>
+    <string name="profile_saved_rewards_cd">Open saved rewards</string>
+    <string name="profile_support_title">Support &amp; legal</string>
+    <string name="profile_help_title">Help &amp; FAQs</string>
+    <string name="profile_help_cd">Open help center</string>
+    <string name="profile_terms_title">Terms of Service</string>
+    <string name="profile_privacy_title">Privacy Policy</string>
+    <string name="profile_sign_out">Sign out</string>
+    <string name="profile_edit_name_title">Your name</string>
+    <string name="profile_edit_name_hint">Full name</string>
+    <string name="profile_edit_name_save">Save</string>
+    <string name="profile_edit_name_error">Please enter your name</string>
+    <string name="profile_name_updated">Profile name updated</string>
 </resources>

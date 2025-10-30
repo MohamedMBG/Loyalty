@@ -1,12 +1,16 @@
 package com.example.loyaltyprogram;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -24,12 +28,19 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
 import java.util.concurrent.TimeUnit;
 
 public class SignInActivity extends AppCompatActivity {
 
     EditText phoneNumberEditText;
     Button guestSignInButton , signInButton;
+
+    private static final String PREFS_NAME = "loyalty_prefs";
+    private static final String KEY_USER_NAME = "user_name";
 
     // Firebase
     private FirebaseAuth auth;
@@ -187,7 +198,7 @@ public class SignInActivity extends AppCompatActivity {
                     enableUi(true);
                     if (task.isSuccessful()) {
                         Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
-                        goToMain();
+                        handlePostSignIn();
                     } else {
                         String msg = (task.getException() != null)
                                 ? task.getException().getMessage()
@@ -197,10 +208,60 @@ public class SignInActivity extends AppCompatActivity {
                 });
     }
 
+    private void handlePostSignIn() {
+        if (getStoredUserName().isEmpty()) {
+            promptForDisplayName();
+        } else {
+            goToMain();
+        }
+    }
+
     private void enableUi(boolean enabled) {
         signInButton.setEnabled(enabled);
         guestSignInButton.setEnabled(enabled);
         phoneNumberEditText.setEnabled(enabled);
+    }
+
+    private void promptForDisplayName() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_name_input, null);
+        final TextInputLayout inputLayout = dialogView.findViewById(R.id.inputLayoutName);
+        final TextInputEditText inputEditText = dialogView.findViewById(R.id.inputName);
+
+        final AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.profile_edit_name_title)
+                .setView(dialogView)
+                .setCancelable(false)
+                .setPositiveButton(R.string.profile_edit_name_save, null)
+                .create();
+
+        dialog.setOnShowListener(d -> {
+            Button saveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            saveButton.setOnClickListener(v -> {
+                String enteredName = inputEditText.getText() != null
+                        ? inputEditText.getText().toString().trim()
+                        : "";
+                if (enteredName.isEmpty()) {
+                    inputLayout.setError(getString(R.string.profile_edit_name_error));
+                } else {
+                    inputLayout.setError(null);
+                    storeUserName(enteredName);
+                    dialog.dismiss();
+                    goToMain();
+                }
+            });
+        });
+
+        dialog.show();
+    }
+
+    private String getStoredUserName() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        return prefs.getString(KEY_USER_NAME, "");
+    }
+
+    private void storeUserName(String name) {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        prefs.edit().putString(KEY_USER_NAME, name).apply();
     }
 
     private void goToMain() {

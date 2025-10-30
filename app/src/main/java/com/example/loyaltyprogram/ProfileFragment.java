@@ -1,64 +1,116 @@
 package com.example.loyaltyprogram;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class ProfileFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String PREFS_NAME = "loyalty_prefs";
+    private static final String KEY_USER_NAME = "user_name";
 
     public ProfileFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        TextView nameView = view.findViewById(R.id.tvName);
+        TextView phoneView = view.findViewById(R.id.tvPhone);
+        TextView pointsView = view.findViewById(R.id.tvPoints);
+        View editNameButton = view.findViewById(R.id.btnEditName);
+
+        String storedName = getStoredName();
+        if (storedName.isEmpty()) {
+            storedName = getString(R.string.profile_name_placeholder);
+        }
+        nameView.setText(storedName);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null && user.getPhoneNumber() != null) {
+            phoneView.setText(user.getPhoneNumber());
+        } else {
+            phoneView.setText(R.string.profile_phone_placeholder);
+        }
+
+        int points = PointsRepository.getInstance(requireContext()).getPoints();
+        pointsView.setText(getString(R.string.profile_points_value, points));
+
+        editNameButton.setOnClickListener(v -> showNameEditDialog(nameView));
+    }
+
+    private void showNameEditDialog(TextView targetView) {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        View dialogView = inflater.inflate(R.layout.dialog_name_input, null);
+        TextInputLayout inputLayout = dialogView.findViewById(R.id.inputLayoutName);
+        TextInputEditText inputEditText = dialogView.findViewById(R.id.inputName);
+        String currentName = getStoredName();
+        if (!currentName.isEmpty()) {
+            inputEditText.setText(currentName);
+            inputEditText.setSelection(currentName.length());
+        }
+
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.profile_edit_name_title)
+                .setView(dialogView)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.profile_edit_name_save, null)
+                .create();
+
+        dialog.setOnShowListener(d -> {
+            Button saveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            saveButton.setOnClickListener(v -> {
+                String enteredName = inputEditText.getText() != null
+                        ? inputEditText.getText().toString().trim()
+                        : "";
+                if (enteredName.isEmpty()) {
+                    inputLayout.setError(getString(R.string.profile_edit_name_error));
+                } else {
+                    inputLayout.setError(null);
+                    storeName(enteredName);
+                    targetView.setText(enteredName);
+                    Toast.makeText(requireContext(), R.string.profile_name_updated, Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+            });
+        });
+
+        dialog.show();
+    }
+
+    private String getStoredName() {
+        SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(KEY_USER_NAME, "");
+    }
+
+    private void storeName(String name) {
+        SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putString(KEY_USER_NAME, name).apply();
     }
 }
