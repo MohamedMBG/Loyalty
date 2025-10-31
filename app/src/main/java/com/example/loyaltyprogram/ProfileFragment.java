@@ -3,6 +3,7 @@ package com.example.loyaltyprogram;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ import java.util.Locale;
 
 public class ProfileFragment extends Fragment {
 
+    private static final String TAG = "ProfileFragment";
+
     private TextView nameView;
     private TextView emailView;
     private TextView phoneView;
@@ -35,6 +38,7 @@ public class ProfileFragment extends Fragment {
     private AlertDialog profileDetailsDialog;
     private static final String BIRTHDAY_STORAGE_PATTERN = "yyyy-MM-dd";
     private static final String BIRTHDAY_DISPLAY_PATTERN = "MMM d, yyyy";
+    private FirebaseUserRepository firebaseUserRepository;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -64,6 +68,12 @@ public class ProfileFragment extends Fragment {
         if (!UserPreferences.isProfileComplete(requireContext())) {
             showProfileDetailsDialog(true);
         }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        firebaseUserRepository = FirebaseUserRepository.getInstance();
     }
 
     @Override
@@ -215,6 +225,7 @@ public class ProfileFragment extends Fragment {
                     if (!TextUtils.equals(currentBirthdayIso, enteredBirthdayIso)) {
                         PointsRepository.getInstance(requireContext()).resetBirthdayBonusTracking();
                     }
+                    syncProfileToFirestore(enteredEmail, enteredName, enteredBirthdayIso);
                     updateProfileUi();
                     Toast.makeText(requireContext(), R.string.profile_details_saved,
                             Toast.LENGTH_SHORT).show();
@@ -224,6 +235,20 @@ public class ProfileFragment extends Fragment {
         });
 
         profileDetailsDialog.show();
+    }
+
+    private void syncProfileToFirestore(String email, String name, String birthdayIso) {
+        if (TextUtils.isEmpty(email)) {
+            return;
+        }
+
+        if (firebaseUserRepository == null) {
+            firebaseUserRepository = FirebaseUserRepository.getInstance();
+        }
+
+        firebaseUserRepository.updateUserProfile(email, name, birthdayIso)
+                .addOnSuccessListener(unused -> Log.d(TAG, "Profile synced with Firestore"))
+                .addOnFailureListener(error -> Log.e(TAG, "Failed to sync profile", error));
     }
 
     private void showBirthdayPicker(TextInputEditText birthdayInput, @Nullable TextInputLayout birthdayLayout) {

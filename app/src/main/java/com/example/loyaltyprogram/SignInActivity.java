@@ -2,6 +2,7 @@ package com.example.loyaltyprogram;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -14,8 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SignInActivity extends AppCompatActivity {
 
+    private static final String TAG = "SignInActivity";
+
     EditText emailEditText;
     Button guestSignInButton , signInButton;
+    private FirebaseUserRepository firebaseUserRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +31,7 @@ public class SignInActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.EmailInput);
         guestSignInButton = findViewById(R.id.continueGuest);
         signInButton = findViewById(R.id.continueButton);
+        firebaseUserRepository = FirebaseUserRepository.getInstance();
 
         if (UserPreferences.isUserSignedIn(this)) {
             handlePostSignIn();
@@ -56,6 +61,11 @@ public class SignInActivity extends AppCompatActivity {
 
         UserPreferences.setUserEmail(this, email);
         UserPreferences.setUserSignedIn(this, true);
+
+        firebaseUserRepository.ensureUserDocument(email)
+                .addOnSuccessListener(unused -> Log.d(TAG, "User synced with Firestore"))
+                .addOnFailureListener(error -> Log.e(TAG, "Failed to sync user with Firestore", error));
+
         Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
         enableUi(true);
         handlePostSignIn();
