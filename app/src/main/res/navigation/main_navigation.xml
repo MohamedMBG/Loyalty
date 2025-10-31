@@ -25,4 +25,9 @@
         android:name="com.example.loyaltyprogram.RewardsFragment"
         android:label="fragment_rewards"
         tools:layout="@layout/fragment_rewards" />
+    <fragment
+        android:id="@+id/navigation_activity"
+        android:name="com.example.loyaltyprogram.ActivityFragment"
+        android:label="fragment_activity"
+        tools:layout="@layout/fragment_activity" />
 </navigation>

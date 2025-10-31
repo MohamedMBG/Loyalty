@@ -40,6 +40,17 @@
                 android:layout_marginBottom="4dp" />
 
             <TextView
+                android:id="@+id/tvRewardDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enjoy a handcrafted beverage on us"
+                android:textColor="#666666"
+                android:textSize="12sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
                 android:id="@+id/tvRewardPoints"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
