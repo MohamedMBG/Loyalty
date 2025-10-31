@@ -14,6 +14,7 @@ public final class UserPreferences {
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_EMAIL = "user_email";
     private static final String KEY_USER_BIRTHDAY = "user_birthday";
+    private static final String KEY_SIGNED_IN = "user_signed_in";
 
     private UserPreferences() {
         // Utility class
@@ -45,6 +46,24 @@ public final class UserPreferences {
 
     public static void setUserBirthday(Context context, String birthdayIsoDate) {
         getPrefs(context).edit().putString(KEY_USER_BIRTHDAY, birthdayIsoDate).apply();
+    }
+
+    public static boolean isUserSignedIn(Context context) {
+        return getPrefs(context).getBoolean(KEY_SIGNED_IN, false)
+                && !TextUtils.isEmpty(getUserEmail(context));
+    }
+
+    public static void setUserSignedIn(Context context, boolean signedIn) {
+        getPrefs(context).edit().putBoolean(KEY_SIGNED_IN, signedIn).apply();
+    }
+
+    public static void clearUser(Context context) {
+        getPrefs(context).edit()
+                .remove(KEY_USER_NAME)
+                .remove(KEY_USER_EMAIL)
+                .remove(KEY_USER_BIRTHDAY)
+                .remove(KEY_SIGNED_IN)
+                .apply();
     }
 
     public static boolean isProfileComplete(Context context) {

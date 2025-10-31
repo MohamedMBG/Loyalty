@@ -5,9 +5,6 @@ import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,7 +23,13 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 // Decide where to go next (sign-in or main)
-                Intent next = new Intent(this, SignInActivity.class);
+                boolean isSignedIn = UserPreferences.isUserSignedIn(this);
+                Intent next;
+                if (isSignedIn) {
+                    next = new Intent(this, LoyaltyActivity.class);
+                } else {
+                    next = new Intent(this, SignInActivity.class);
+                }
 
                 next.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(next);
