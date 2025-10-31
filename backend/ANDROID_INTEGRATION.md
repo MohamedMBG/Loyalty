@@ -1,32 +1,16 @@
 # Android integration guide
 
-Follow these steps in your Android (Java) app after a user signs up with Firebase Authentication using an email address.
+Follow these steps in your Android (Java) app after a user signs up through your own backend. The email verification flow is powered entirely by this service and an SMTP server—Firebase is **not** required.
 
-1. **Create the Firebase user via email/password sign-up.**
+1. **Create the user on your backend and request a verification email.**
    ```java
-   FirebaseAuth auth = FirebaseAuth.getInstance();
-   auth.createUserWithEmailAndPassword(email, password)
-       .addOnCompleteListener(task -> {
-           if (task.isSuccessful()) {
-               FirebaseUser firebaseUser = auth.getCurrentUser();
-               if (firebaseUser != null) {
-                   sendCustomVerification(firebaseUser);
-               }
-           } else {
-               // Handle errors (e.g. email already in use).
-           }
-       });
-   ```
-
-2. **Call the backend to send the verification email.**
-   ```java
-   private void sendCustomVerification(FirebaseUser firebaseUser) {
+   private void registerAndSendVerification(String uid, String emailAddress) {
        String endpoint = "https://your-backend-domain.com/auth/send-verification";
 
        JSONObject payload = new JSONObject();
        try {
-           payload.put("uid", firebaseUser.getUid());
-           payload.put("email", firebaseUser.getEmail());
+           payload.put("uid", uid);             // Unique identifier from your auth system
+           payload.put("email", emailAddress);   // Address that should receive the verification email
        } catch (JSONException e) {
            // Handle JSON error.
            return;
@@ -50,40 +34,40 @@ Follow these steps in your Android (Java) app after a user signs up with Firebas
    }
    ```
 
-3. **Prompt the user to check their inbox and refresh verification status.**
+2. **Prompt the user to check their inbox and poll verification status.**
    ```java
-   Button refreshButton = findViewById(R.id.refreshButton);
-   refreshButton.setOnClickListener(v -> {
-       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-       if (user != null) {
-           user.reload()
-               .addOnCompleteListener(reloadTask -> {
-                   FirebaseUser reloadedUser = FirebaseAuth.getInstance().getCurrentUser();
-                   if (reloadedUser != null && reloadedUser.isEmailVerified()) {
-                       // Navigate to the verified experience.
-                   } else {
-                       // Stay on the waiting screen and inform the user.
-                   }
-               });
-       }
-   });
-   ```
+   private void refreshVerificationStatus(String uid) {
+       String statusUrl = "https://your-backend-domain.com/auth/status/" + uid;
 
-4. **Gate protected features by checking `FirebaseUser.isEmailVerified()`.**
-   ```java
-   FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-   if (currentUser != null && currentUser.isEmailVerified()) {
-       // Allow access to loyalty rewards features.
-   } else {
-       // Redirect to verification prompt screen.
+       RequestQueue queue = Volley.newRequestQueue(this);
+       JsonObjectRequest request = new JsonObjectRequest(
+           Request.Method.GET,
+           statusUrl,
+           null,
+           response -> {
+               boolean verified = response.optBoolean("verified", false);
+               if (verified) {
+                   // Navigate to the verified experience.
+               } else {
+                   // Stay on the waiting screen and inform the user.
+               }
+           },
+           error -> {
+               // Handle errors (e.g. user not found or server issue).
+           }
+       );
+
+       queue.add(request);
    }
    ```
 
-5. **Handle success redirect.**
+   You can call `refreshVerificationStatus` on demand (e.g., pull-to-refresh) or schedule it with a `Handler`, `Coroutine`, or `WorkManager` to poll periodically. Avoid aggressive polling—every few minutes is sufficient.
+
+3. **Gate protected features by checking the verification status you retrieved.**
+   Store the `verified` boolean for the logged-in user and confirm it before allowing access to loyalty features.
+
+4. **Handle success redirect.**
    - When the user taps the link in the email, the backend will redirect them to `APP_SUCCESS_URL`.
-   - You can host a lightweight web page at that URL instructing users to return to the app and tap **Refresh**.
+   - Host a lightweight web page at that URL instructing users to return to the app and tap **Refresh**.
 
-6. **Optional: Poll for verification.**
-   - Use `Handler`/`Coroutine`/`WorkManager` to periodically call `firebaseUser.reload()` until verified, or prompt manual refresh to avoid aggressive polling.
-
-Ensure the Android app enforces HTTPS when calling the backend and consider attaching an Authorization header (e.g., Firebase ID token) if you want to restrict access to authenticated clients only.
+Ensure the Android app enforces HTTPS when calling the backend and consider attaching an Authorization header or signed token from your authentication system if you want to restrict access to authenticated clients only.
