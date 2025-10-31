@@ -18,8 +18,6 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -90,12 +88,7 @@ public class ProfileFragment extends Fragment {
         }
         emailView.setText(storedEmail);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null && user.getPhoneNumber() != null) {
-            phoneView.setText(user.getPhoneNumber());
-        } else {
-            phoneView.setText(R.string.profile_phone_placeholder);
-        }
+        phoneView.setText(R.string.profile_phone_placeholder);
 
         PointsRepository pointsRepository = PointsRepository.getInstance(requireContext());
 

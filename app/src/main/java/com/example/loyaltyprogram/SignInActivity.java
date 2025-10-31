@@ -3,29 +3,19 @@ package com.example.loyaltyprogram;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseUser;
 
 public class SignInActivity extends AppCompatActivity {
 
     EditText emailEditText;
-    EditText passwordEditText;
     Button guestSignInButton , signInButton;
-
-    // Firebase
-    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,25 +25,25 @@ public class SignInActivity extends AppCompatActivity {
 
         // Views
         emailEditText = findViewById(R.id.EmailInput);
-        passwordEditText = findViewById(R.id.PasswordInput);
         guestSignInButton = findViewById(R.id.continueGuest);
         signInButton = findViewById(R.id.continueButton);
 
-        // Firebase
-        auth = FirebaseAuth.getInstance();
+        if (UserPreferences.isUserSignedIn(this)) {
+            handlePostSignIn();
+            return;
+        }
 
         // Continue as Guest → go to main (no auth)
         guestSignInButton.setOnClickListener(v -> goToMain());
 
         // Sign in with email
         signInButton.setOnClickListener(v -> {
-            attemptEmailAuthentication();
+            attemptEmailOnlyAuthentication();
         });
     }
 
-    private void attemptEmailAuthentication() {
+    private void attemptEmailOnlyAuthentication() {
         String email = emailEditText.getText().toString().trim();
-        String password = passwordEditText.getText().toString();
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailEditText.setError("Enter a valid email");
@@ -61,96 +51,14 @@ public class SignInActivity extends AppCompatActivity {
             return;
         }
 
-        if (password.length() < 6) {
-            passwordEditText.setError("Password must be at least 6 characters");
-            passwordEditText.requestFocus();
-            return;
-        }
-
         enableUi(false);
+        hideKeyboard();
 
-        auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        handleSignedInUser();
-                    } else {
-                        Exception ex = task.getException();
-                        if (ex instanceof FirebaseAuthInvalidUserException) {
-                            registerNewUser(email, password);
-                        } else if (ex instanceof FirebaseAuthInvalidCredentialsException) {
-                            enableUi(true);
-                            passwordEditText.setError("Incorrect password");
-                            passwordEditText.requestFocus();
-                        } else {
-                            enableUi(true);
-                            String msg = (ex != null) ? ex.getMessage() : "Authentication failed.";
-                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-    }
-
-    private void handleSignedInUser() {
-        FirebaseUser user = auth.getCurrentUser();
-        if (user == null) {
-            enableUi(true);
-            Toast.makeText(this, "Authentication failed.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if (user.isEmailVerified()) {
-            enableUi(true);
-            Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
-            handlePostSignIn();
-        } else {
-            sendVerificationEmail(user, true);
-        }
-    }
-
-    private void registerNewUser(String email, String password) {
-        auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser user = auth.getCurrentUser();
-                        if (user != null) {
-                            sendVerificationEmail(user, false);
-                        } else {
-                            enableUi(true);
-                            Toast.makeText(this, "Could not create user.", Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        enableUi(true);
-                        Exception ex = task.getException();
-                        String msg = (ex != null) ? ex.getMessage() : "Account creation failed.";
-                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
-
-    private void sendVerificationEmail(FirebaseUser user, boolean existingAccount) {
-        user.sendEmailVerification()
-                .addOnCompleteListener(this, (Task<Void> task) -> {
-                    enableUi(true);
-                    if (task.isSuccessful()) {
-                        String message = existingAccount
-                                ? "Please verify your email. A verification link was sent to " + user.getEmail() + "."
-                                : "Account created! Check " + user.getEmail() + " to verify your email before signing in.";
-                        auth.signOut();
-                        showVerificationDialog(message);
-                    } else {
-                        Exception ex = task.getException();
-                        String msg = (ex != null) ? ex.getMessage() : "Failed to send verification email.";
-                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
-
-    private void showVerificationDialog(String message) {
-        new AlertDialog.Builder(this)
-                .setTitle("Verify your email")
-                .setMessage(message)
-                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                .show();
+        UserPreferences.setUserEmail(this, email);
+        UserPreferences.setUserSignedIn(this, true);
+        Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
+        enableUi(true);
+        handlePostSignIn();
     }
 
     private void handlePostSignIn() {
@@ -162,7 +70,19 @@ public class SignInActivity extends AppCompatActivity {
         signInButton.setEnabled(enabled);
         guestSignInButton.setEnabled(enabled);
         emailEditText.setEnabled(enabled);
-        passwordEditText.setEnabled(enabled);
+    }
+
+    private void hideKeyboard() {
+        View focusedView = getCurrentFocus();
+        if (focusedView == null) {
+            focusedView = emailEditText;
+        }
+        if (focusedView != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
+            }
+        }
     }
 
     private void goToMain() {
