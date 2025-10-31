@@ -68,7 +68,7 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         // Views
-        phoneNumberEditText = findViewById(R.id.phoneNumberInput);
+        phoneNumberEditText = findViewById(R.id.EmailInput);
         guestSignInButton = findViewById(R.id.continueGuest);
         signInButton = findViewById(R.id.continueButton);
 

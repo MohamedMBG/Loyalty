@@ -104,11 +104,11 @@
 
 
                 <EditText
-                    android:id="@+id/phoneNumberInput"
+                    android:id="@+id/EmailInput"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="Enter your phone number"
+                    android:hint="Enter your Email"
                     android:inputType="phone"
                     android:padding="16dp"
                     android:background="@android:color/transparent"
@@ -194,7 +194,8 @@
             android:textColor="#666666"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:backgroundTint="@color/white"
+            app:backgroundTint="#FFFFFF"
+            android:elevation="10dp"
             app:strokeColor="#E0E0E0"
             app:strokeWidth="1dp" />
 
