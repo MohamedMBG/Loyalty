@@ -21,6 +21,7 @@ public class LoyaltyActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
     private RewardsFragment rewardsFragment;
     private ScanFragment scanFragment;
+    private ActivityFragment activityFragment;
     private ProfileFragment profileFragment;
 
     @Override
@@ -34,6 +35,7 @@ public class LoyaltyActivity extends AppCompatActivity {
         homeFragment = new HomeFragment();
         rewardsFragment = new RewardsFragment();
         scanFragment = new ScanFragment();
+        activityFragment = new ActivityFragment();
         profileFragment = new ProfileFragment();
 
         fragmentManager = getSupportFragmentManager();
@@ -65,6 +67,9 @@ public class LoyaltyActivity extends AppCompatActivity {
                     return true;
                 } else if (itemId == R.id.scanFragment) {
                     loadFragment(scanFragment);
+                    return true;
+                } else if (itemId == R.id.navigation_activity) {
+                    loadFragment(activityFragment);
                     return true;
                 } else if (itemId == R.id.profileFragment) {
                     loadFragment(profileFragment);
