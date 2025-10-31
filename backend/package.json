@@ -1,0 +1,20 @@
+{
+  "name": "loyalty-email-verification-backend",
+  "version": "1.0.0",
+  "description": "Custom email verification backend for Firebase-authenticated Android app using Gmail SMTP.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.0.0",
+    "nodemailer": "^6.9.13",
+    "uuid": "^9.0.1"
+  }
+}

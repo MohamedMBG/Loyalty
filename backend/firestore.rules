@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Lock down email verification tokens.
+    match /email_verifications/{token} {
+      allow read, write: if false; // Only the backend should access this collection.
+    }
+
+    // Add additional rules for your app data here.
+  }
+}
