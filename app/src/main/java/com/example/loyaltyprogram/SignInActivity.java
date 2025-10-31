@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SignInActivity extends AppCompatActivity {
@@ -20,6 +22,7 @@ public class SignInActivity extends AppCompatActivity {
     EditText emailEditText;
     Button guestSignInButton , signInButton;
     private FirebaseUserRepository firebaseUserRepository;
+    private EmailVerificationService emailVerificationService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,7 @@ public class SignInActivity extends AppCompatActivity {
         guestSignInButton = findViewById(R.id.continueGuest);
         signInButton = findViewById(R.id.continueButton);
         firebaseUserRepository = FirebaseUserRepository.getInstance();
+        emailVerificationService = EmailVerificationService.getInstance();
 
         if (UserPreferences.isUserSignedIn(this)) {
             handlePostSignIn();
@@ -66,9 +70,25 @@ public class SignInActivity extends AppCompatActivity {
                 .addOnSuccessListener(unused -> Log.d(TAG, "User synced with Firestore"))
                 .addOnFailureListener(error -> Log.e(TAG, "Failed to sync user with Firestore", error));
 
-        Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
+        triggerVerificationEmail(email);
+        Toast.makeText(this, R.string.sign_in_success_check_email, Toast.LENGTH_LONG).show();
         enableUi(true);
         handlePostSignIn();
+    }
+
+    private void triggerVerificationEmail(String email) {
+        emailVerificationService.sendVerificationEmail(email, new EmailVerificationService.VerificationCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d(TAG, "Verification email request completed successfully");
+            }
+
+            @Override
+            public void onFailure(@NonNull String reason, @Nullable Throwable throwable) {
+                Log.w(TAG, "Failed to trigger verification email: " + reason, throwable);
+                Toast.makeText(getApplicationContext(), R.string.sign_in_verification_failed, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void handlePostSignIn() {

@@ -34,4 +34,6 @@
     <string name="profile_edit_details_title">Edit profile details</string>
     <string name="profile_details_save">Save</string>
     <string name="profile_details_saved">Profile details saved</string>
+    <string name="sign_in_success_check_email">Signed in! Check your email to verify your account.</string>
+    <string name="sign_in_verification_failed">We couldn&#39;t send a verification email. Please try again later.</string>
 </resources>
